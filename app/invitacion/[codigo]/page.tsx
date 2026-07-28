@@ -28,13 +28,10 @@ export default function InvitacionPage() {
     });
 
     if (signUpError) {
-      // El trigger de la base de datos rechaza códigos inválidos, expirados,
-      // revocados o agotados — el mensaje llega tal cual desde Postgres.
-      setError(
-        signUpError.message.includes("invitación")
-          ? signUpError.message
-          : "No se pudo completar el registro. Verifica el link con tu coach."
-      );
+      // Mostramos el mensaje real de Supabase (en MVP/pruebas esto ayuda a
+      // diagnosticar rápido; el trigger de la base de datos ya traduce los
+      // casos de código inválido/expirado/agotado a español).
+      setError(signUpError.message);
       setLoading(false);
       return;
     }
