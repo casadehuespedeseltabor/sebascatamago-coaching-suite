@@ -38,6 +38,7 @@ export async function middleware(request: NextRequest) {
     path === "/" ||
     path === "/login" ||
     path.startsWith("/coach/registro") ||
+    path.startsWith("/pendiente-aprobacion") ||
     path.startsWith("/invitacion") ||
     path.startsWith("/_next") ||
     path.startsWith("/api");
