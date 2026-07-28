@@ -6,11 +6,24 @@ export default async function AdminPage() {
   const profile = await getProfile();
   const supabase = createClient();
 
-  const { data: coaches } = await supabase
+  const { data: perfilesCoach } = await supabase
     .from("profiles")
-    .select("id, full_name, email, created_at, coach_profiles(status, bio)")
+    .select("id, full_name, email, created_at")
     .eq("role", "coach")
     .order("created_at", { ascending: false });
+
+  const { data: estadosCoach } = await supabase
+    .from("coach_profiles")
+    .select("profile_id, status, bio");
+
+  const estadoPorProfileId = new Map(
+    (estadosCoach ?? []).map((e) => [e.profile_id, e])
+  );
+
+  const coaches = (perfilesCoach ?? []).map((p) => ({
+    ...p,
+    coach_profiles: estadoPorProfileId.get(p.id) ?? null,
+  }));
 
   const { data: clientes } = await supabase
     .from("profiles")
@@ -21,8 +34,8 @@ export default async function AdminPage() {
     .from("wheels")
     .select("*", { count: "exact", head: true });
 
-  const pendientes = (coaches ?? []).filter((c: any) => c.coach_profiles?.status === "pending");
-  const aprobados = (coaches ?? []).filter((c: any) => c.coach_profiles?.status === "approved");
+  const pendientes = coaches.filter((c: any) => c.coach_profiles?.status === "pending");
+  const aprobados = coaches.filter((c: any) => c.coach_profiles?.status === "approved");
 
   const { data: ruedas } = await supabase
     .from("wheels")
